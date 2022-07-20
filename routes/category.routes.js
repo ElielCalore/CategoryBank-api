@@ -12,7 +12,10 @@ const e = require("express");
 router.post("/new-category", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
   try {
-    const newCategory = await CategoryModel.create(req.body);
+    const newCategory = await CategoryModel.create({
+      ...req.body,
+      user: loggedInUser._id,
+    });
     await UserModel.findOneAndUpdate(
       { _id: loggedInUser._id },
       { $push: { categories: newCategory._id } },
