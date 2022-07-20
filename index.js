@@ -13,6 +13,9 @@ app.use("/", uploadImgRouter);
 const userRouter = require("./routes/user.routes");
 app.use("/user", userRouter);
 
+const categoryRouter = require("./routes/category.routes");
+app.use("category", categoryRouter);
+
 app.listen(Number(process.env.PORT), () => {
   console.log("Server up at port: ", process.env.PORT);
 });
