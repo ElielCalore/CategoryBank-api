@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findOne({ email: email });
-
+    //ADD userisActive === True (If isActive = FALSE mudar para TRUE)
     if (!user) {
       return res.status(400).json({ msg: "Wrong password or email." });
     }
@@ -89,7 +89,7 @@ router.patch("/update-profile", isAuth, attachCurrentUser, async (req, res) => {
 });
 
 //SOFT DELETE
-
+//ADD HARD DELETE
 router.delete(
   "/disable-profile",
   isAuth,
