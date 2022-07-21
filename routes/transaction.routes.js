@@ -7,27 +7,24 @@ const TransactionModel = require("../models/Transaction.model");
 
 //Create
 
-router.post("/new-transaction"),
-  isAuth,
-  attachCurrentUser,
-  async (req, res) => {
-    const loggedInUser = req.currentUser;
-    try {
-      const newTransaction = await TransactionModel.create({
-        ...req.body,
-        user: loggedInUser._id,
-      });
-      await UserModel.findOneAndUpdate(
-        { _id: loggedInUser },
-        { $push: { transactions: newTransaction._id } },
-        { new: true }
-      );
-      return res.status(201).json(newTransaction);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json(error);
-    }
-  };
+router.post("/new-transaction", isAuth, attachCurrentUser, async (req, res) => {
+  const loggedInUser = req.currentUser;
+  try {
+    const newTransaction = await TransactionModel.create({
+      ...req.body,
+      user: loggedInUser._id,
+    });
+    await UserModel.findOneAndUpdate(
+      { _id: loggedInUser },
+      { $push: { transactions: newTransaction._id } },
+      { new: true }
+    );
+    return res.status(201).json(newTransaction);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+});
 
 // Read - All
 
@@ -49,7 +46,7 @@ router.get("/:transactionId", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
   const transactionId = req.params;
   try {
-    const transaction = TransactionModel.findOne({ _id: transactionId });
+    const transaction = await TransactionModel.findOne({ _id: transactionId });
     if (loggedInUser._id !== transaction.user) {
       return res
         .status(401)
@@ -78,7 +75,9 @@ router.patch(
     delete req.body.categories;
 
     try {
-      const transactions = TransactionModel.findOne({ _id: transactionId });
+      const transactions = await TransactionModel.findOne({
+        _id: transactionId,
+      });
 
       if (loggedInUser._id != transactionId._id) {
         return res.status(401).json({

@@ -7,6 +7,6 @@ const CategorySchema = new Schema({
   transactions: [{ type: Types.ObjectId, ref: "Transaction" }],
 });
 
-const CategoryModel = model(CategorySchema, "Category");
+const CategoryModel = model("Category", CategorySchema);
 
 module.exports = CategoryModel;

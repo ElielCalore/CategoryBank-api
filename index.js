@@ -16,6 +16,9 @@ app.use("/user", userRouter);
 const categoryRouter = require("./routes/category.routes");
 app.use("category", categoryRouter);
 
+const transactionsRouter = require("./routes/transaction.routes");
+app.use("category", transactionsRouter);
+
 app.listen(Number(process.env.PORT), () => {
   console.log("Server up at port: ", process.env.PORT);
 });
