@@ -105,3 +105,8 @@ router.patch(
 // router.delete();
 
 module.exports = router;
+
+// GET BANK MODEL
+// bankTemplate = await BankModel.find({user: req.current || user: ''})
+
+// bankModel === BankMode que contem CAIO GARCIA ou que nao tenha usuario
