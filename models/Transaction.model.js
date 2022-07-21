@@ -9,6 +9,6 @@ const TransactionSchema = new Schema({
   user: { type: Types.ObjectId, ref: "User" },
 });
 
-const CategoryModel = model(TransactionSchema, "Transactions");
+const CategoryModel = model("Transactions", TransactionSchema);
 
 module.exports = CategoryModel;
