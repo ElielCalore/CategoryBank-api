@@ -1,4 +1,4 @@
-const { Schema, model, default: mongoose } = require("mongoose");
+const { Schema, model, default: mongoose, Types } = require("mongoose");
 
 const userSchema = new Schema({
   name: { type: String, required: true, trim: true },
@@ -10,10 +10,9 @@ const userSchema = new Schema({
     match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   },
   passwordHash: { type: String, required: true },
-  img: { type: String },
-  role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
-  isActive: { type: Boolean, default: true },
-  disabledOn: { type: Date },
+  transactions: [{ type : Types.ObjectId, ref: "Transaction" }],
+  categories: [{ type: Types.ObjectId, ref: "Category" }]
+  
 });
 
 const UserModel = model("User", userSchema);
