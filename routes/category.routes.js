@@ -12,7 +12,10 @@ const e = require("express");
 router.post("/new-category", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
   try {
-    const newCategory = await CategoryModel.create(req.body);
+    const newCategory = await CategoryModel.create({
+      ...req.body,
+      user: loggedInUser._id,
+    });
     await UserModel.findOneAndUpdate(
       { _id: loggedInUser._id },
       { $push: { categories: newCategory._id } },
@@ -43,7 +46,7 @@ router.get("/:categoryId", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
   const categoryId = req.params;
   try {
-    const category = CategoryModel.findOne({ _id: categoryId });
+    const category = await CategoryModel.findOne({ _id: categoryId });
 
     if (loggedInUser._id !== category.user) {
       return res
@@ -62,7 +65,7 @@ router.get("/:categoryId", isAuth, attachCurrentUser, async (req, res) => {
 });
 
 //READ - SUM OF TRANSACTIONS ON A CATEGORY
-router.get();
+// router.get();
 
 //UPDATE CATEGORY
 router.patch(
@@ -76,7 +79,7 @@ router.patch(
     delete req.body.transactions;
 
     try {
-      const category = CategoryModel.findOne({ _id: categoryId });
+      const category = await CategoryModel.findOne({ _id: categoryId });
 
       if (loggedInUser._id !== category.user) {
         return res
@@ -99,6 +102,6 @@ router.patch(
 );
 
 //DELETE CATEGORY
-router.delete();
+// router.delete();
 
 module.exports = router;
