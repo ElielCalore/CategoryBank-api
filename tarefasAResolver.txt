@@ -1,0 +1,5 @@
+1 - Retirar Credito e Debito e inserir Amount.
+2 - Create Model Bank.
+3 - Criar Delete.
+4 - Testar rota Bank.
+5 - Atualizar Modelo de Usuario inserindo o Bank.
