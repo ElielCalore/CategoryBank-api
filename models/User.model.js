@@ -12,6 +12,7 @@ const userSchema = new Schema({
   passwordHash: { type: String, required: true },
   transactions: [{ type: Types.ObjectId, ref: "Transaction" }],
   categories: [{ type: Types.ObjectId, ref: "Category" }],
+  banks: [{ type: Types.ObjectId, ref: "Bank" }]
 });
 
 const UserModel = model("User", userSchema);
