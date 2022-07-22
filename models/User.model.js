@@ -7,12 +7,11 @@ const userSchema = new Schema({
     required: true,
     unique: true,
     trim: true,
-    match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+    //match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   },
   passwordHash: { type: String, required: true },
-  transactions: [{ type : Types.ObjectId, ref: "Transaction" }],
-  categories: [{ type: Types.ObjectId, ref: "Category" }]
-  
+  transactions: [{ type: Types.ObjectId, ref: "Transaction" }],
+  categories: [{ type: Types.ObjectId, ref: "Category" }],
 });
 
 const UserModel = model("User", userSchema);
