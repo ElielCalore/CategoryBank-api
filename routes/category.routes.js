@@ -44,11 +44,14 @@ router.get("/categories", isAuth, attachCurrentUser, async (req, res) => {
 //READ - CATEGORY DETAILS
 router.get("/:categoryId", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
-  const categoryId = req.params;
+  const { categoryId } = req.params;
+
   try {
     const category = await CategoryModel.findOne({ _id: categoryId });
 
-    if (loggedInUser._id !== category.user) {
+    if (String(loggedInUser._id) !== String(category.user)) {
+      console.log(loggedInUser._id);
+      console.log(category.user);
       return res
         .status(401)
         .json({ message: "You are not authorized to view this category." });
@@ -74,14 +77,14 @@ router.patch(
   attachCurrentUser,
   async (req, res) => {
     const loggedInUser = req.currentUser;
-    const categoryId = req.params;
-
-    delete req.body.transactions;
+    const { categoryId } = req.params;
+    const body = { ...req.body };
+    delete body.transactions;
 
     try {
       const category = await CategoryModel.findOne({ _id: categoryId });
 
-      if (loggedInUser._id !== category.user) {
+      if (String(loggedInUser._id) !== String(category.user)) {
         return res
           .status(401)
           .json({ message: "You are not authorized to edit this category." });
@@ -89,7 +92,7 @@ router.patch(
 
       const editedCategory = await CategoryModel.findOneAndUpdate(
         { _id: categoryId },
-        { ...req.body },
+        { ...body },
         { new: true, runValidators: true }
       );
 

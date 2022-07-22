@@ -5,10 +5,10 @@ const TransactionSchema = new Schema({
   description: { type: String, required: true, trim: true },
   credit: { type: Number, trim: true, default: 0 },
   debt: { type: Number, trim: true, default: 0 },
-  categories: { type: Types.ObjectId, ref: "Category" },
+  category: { type: Types.ObjectId, ref: "Category" },
   user: { type: Types.ObjectId, ref: "User" },
 });
 
-const CategoryModel = model("Transactions", TransactionSchema);
+const TransactionModel = model("Transactions", TransactionSchema);
 
-module.exports = CategoryModel;
+module.exports = TransactionModel;

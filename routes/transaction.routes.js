@@ -44,10 +44,10 @@ router.get("/transactions", isAuth, attachCurrentUser, async (req, res) => {
 //READ - DETAILS
 router.get("/:transactionId", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
-  const transactionId = req.params;
+  const { transactionId } = req.params;
   try {
     const transaction = await TransactionModel.findOne({ _id: transactionId });
-    if (loggedInUser._id !== transaction.user) {
+    if (String(loggedInUser._id) !== String(transaction.user)) {
       return res
         .status(401)
         .json({ message: "You are not authorized to view this transaction." });
@@ -63,39 +63,92 @@ router.get("/:transactionId", isAuth, attachCurrentUser, async (req, res) => {
 });
 
 //UPDATE
-
+/*
 router.patch(
   "/update/:transactionId",
   isAuth,
   attachCurrentUser,
   async (req, res) => {
     const loggedInUser = req.currentUser;
-    const transactionId = req.params;
+    const { transactionId } = req.params;
+    const body = { ...req.body };
 
-    delete req.body.categories;
+    // delete body.categories;
 
     try {
-      const transactions = await TransactionModel.findOne({
+      const transaction = await TransactionModel.findOne({
         _id: transactionId,
       });
 
-      if (loggedInUser._id != transactionId._id) {
+      if (String(loggedInUser._id) !== String(transaction.user)) {
+        console.log(loggedInUser._id);
+        console.log(transaction.user);
         return res.status(401).json({
-          message: "You are not authorized to view this transaction.",
+          message: "You are not authorized to edit this transaction.",
         });
       }
 
       const editedTransaction = await TransactionModel.findOneAndUpdate(
         { _id: transactionId },
-        { ...req.body },
-        { new: true }
+        { ...body },
+        { new: true, runValidators: true }
       );
+
       return res.status(200).json(editedTransaction);
     } catch (error) {
       console.error(error);
-      return res.status(500), json(error);
+      return res.status(500).json(error);
     }
   }
 );
+*/
+
+//Update transaction-category
+
+router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
+  const body = { ...req.body };
+  const { categoryId, transactionId } = body;
+  const loggedInUser = req.currentUser;
+
+  console.log(transactionId);
+
+  try {
+    const transaction = await TransactionModel.findOne({
+      _id: transactionId,
+    });
+
+    if (String(loggedInUser._id) !== String(transaction.user)) {
+      return res.status(401).json({
+        message: "You are not authorized to edit this transaction.",
+      });
+    }
+
+    //Editando transação
+    const editedTransaction = await TransactionModel.findOneAndUpdate(
+      { _id: transactionId },
+      { ...body },
+      { new: true }
+    );
+
+    //Removendo Transação de sua última categoria
+    await CategoryModel.findOneAndUpdate(
+      { transactions: transactionId },
+      { $pull: { transactions: transactionId } },
+      { new: true }
+    );
+
+    //Adicionando Transação a nova Categoria
+    const editedCategory = await CategoryModel.findOneAndUpdate(
+      { _id: categoryId },
+      { $push: { transactions: transactionId } },
+      { new: true }
+    );
+
+    return res.status(201).json({ editedTransaction, editedCategory });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
+});
 
 module.exports = router;
