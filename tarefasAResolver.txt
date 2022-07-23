@@ -1,5 +1,9 @@
-1 - Retirar Credito e Debito e inserir Amount. (ok).
-2 - Create Model Bank.(ok).
-3 - Criar Delete.
-4 - Testar rota Bank.
-5 - Atualizar Modelo de Usuario inserindo o Bank. (ok).
+1 - Testar rota Bank.
+2 - Adicionar Bancos do sistema no endPoint. user/sign-up.
+3 - Limpar console.log. (ctrl+F).
+
+
+
+
+
+

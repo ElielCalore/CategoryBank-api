@@ -34,7 +34,7 @@ router.get("/bank-model", isAuth, attachCurrentUser, async (req, res) => {
 
   try {
     const bankTemplate = await BankModel.find({
-      $or: [{ user: loggedInUser._id }, { user: "" }],
+      $or: [{ user: loggedInUser._id }, { user: null }],
     });
 
     return res.status(200).json(bankTemplate);
@@ -82,8 +82,8 @@ router.get("/:bankId", isAuth, attachCurrentUser, async (req, res) => {
         .json({ message: "You are not authorized to view this CSV template." });
     }
 
-    const bankDetails = await BankModel.fineOne({
-      _id: loggedInUser._id,
+    const bankDetails = await BankModel.findOne({
+      _id: bankId,
     }).populate("user");
     return res.status(200).json(bankDetails);
   } catch (error) {
@@ -104,6 +104,11 @@ router.patch("/update-bank", isAuth, attachCurrentUser, async (req, res) => {
       _id: bankId,
     });
 
+    if (bank.user === null) {
+      return res.status(401).json({
+        message: "You are not authorized to edit a default template.",
+      });
+    }
     if (String(loggedInUser._id) !== String(bank.user)) {
       return res.status(401).json({
         message: "You are not authorized to edit this bank.",
