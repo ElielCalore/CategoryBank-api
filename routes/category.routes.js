@@ -6,6 +6,7 @@ const CategoryModel = require("../models/Category.model");
 const { route } = require("./user.routes");
 const UserModel = require("../models/User.model");
 const e = require("express");
+const TransactionModel = require("../models/Transaction.model");
 
 //CREATE
 
@@ -105,7 +106,45 @@ router.patch(
 );
 
 //DELETE CATEGORY
-// router.delete();
+router.delete(
+  "/delete/:categoryId",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
+    const { categoryId } = req.params;
+    const loggedInUser = req.currentUser;
+
+    try {
+      const category = await CategoryModel.findOne({ _id: categoryId });
+
+      if (String(loggedInUser._id) !== String(category.user)) {
+        return res.status(401).json({
+          message: "You are not authorized to delete this transaction.",
+        });
+      }
+
+      const deletedCategory = await CategoryModel.findOneAndDelete({
+        _id: categoryId,
+      });
+
+      await TransactionModel.findOneAndUpdate(
+        { category: categoryId },
+        { category: null },
+        { new: true }
+      );
+      await UserModel.findOneAndUpdate(
+        { categories: categoryId },
+        { $pull: { categories: categoryId } },
+        { new: true }
+      );
+
+      return res.status(202).json(deletedCategory);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json(error);
+    }
+  }
+);
 
 module.exports = router;
 
