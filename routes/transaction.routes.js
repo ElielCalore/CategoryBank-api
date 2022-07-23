@@ -126,7 +126,7 @@ router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
     //Editando transação
     const editedTransaction = await TransactionModel.findOneAndUpdate(
       { _id: transactionId },
-      { ...body },
+      { category: categoryId },
       { new: true }
     );
 
@@ -148,6 +148,43 @@ router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
+  }
+});
+
+router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
+  const body = req.body;
+  const { transactionId } = body;
+  const loggedInUser = req.currentUser;
+
+  try {
+    const transaction = await TransactionModel.findOne({ _id: transactionId });
+
+    if (String(loggedInUser._id) !== String(transaction.user)) {
+      return res.status(401).json({
+        message: "You are not authorized to delete this transaction.",
+      });
+    }
+
+    const deletedTransaction = await TransactionModel.findOneAndDelete({
+      _id: transactionId,
+    });
+
+    await CategoryModel.findOneAndUpdate(
+      { transactions: transactionId },
+      { $pull: { transactions: transactionId } },
+      { new: true }
+    );
+
+    await UserModel.findOneAndUpdate(
+      { transactions: transactionId },
+      { $pull: { transactions: transactionId } },
+      { new: true }
+    );
+
+    return res.status(202).json(deletedTransaction);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 });
 
