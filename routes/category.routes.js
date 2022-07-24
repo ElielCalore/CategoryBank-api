@@ -117,6 +117,12 @@ router.delete(
     try {
       const category = await CategoryModel.findOne({ _id: categoryId });
 
+      if (!category.user) {
+        return res.status(401).json({
+          message: "You are not authorized to delete a default category.",
+        });
+      }
+
       if (String(loggedInUser._id) !== String(category.user)) {
         return res.status(401).json({
           message: "You are not authorized to delete this transaction.",
