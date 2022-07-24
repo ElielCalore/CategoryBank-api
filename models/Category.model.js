@@ -6,7 +6,6 @@ const CategorySchema = new Schema({
     required: true,
     trim: true,
     maxlength: 20,
-    unique: true,
   }, //add regex add unique
   description: { type: String, required: true, trim: true, maxlength: 150 },
   user: { type: Types.ObjectId, ref: "User" },

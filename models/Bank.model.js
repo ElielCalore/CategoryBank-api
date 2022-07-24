@@ -7,6 +7,12 @@ const BankSchema = new Schema({
   credit: { type: String, trim: true },
   amount: { type: String, trim: true },
   user: { type: Types.ObjectId, ref: "User" },
+  dateFormat: {
+    type: String,
+    enum: ["MM/DD/YY", "DD/MM/YY", "YY/MM/DD"],
+    trim: true,
+    required: true,
+  },
 });
 
 const BankModel = model("Bank", BankSchema);
