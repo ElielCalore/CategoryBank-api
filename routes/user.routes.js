@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/User.model");
-
+const BankModel = require("../models/Bank.model");
+const CategoryModel = require("../models/Category.model");
 const generateToken = require("../config/jwt.config");
 const isAuth = require("../middlewares/isAuth");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
@@ -30,6 +31,15 @@ router.post("/signup", async (req, res) => {
     });
 
     delete createdUser._doc.passwordHash;
+
+    const defaultBanks = await BankModel.find({ user: null });
+    const defaultCategories = await CategoryModel.find({ user: null });
+
+    await UserModel.findOneAndUpdate(
+      { _id: createdUser._id },
+      { banks: defaultBanks, categories: defaultCategories },
+      { new: true }
+    );
 
     return res.status(201).json(createdUser);
   } catch (error) {
