@@ -33,11 +33,24 @@ router.post("/signup", async (req, res) => {
     delete createdUser._doc.passwordHash;
 
     const defaultBanks = await BankModel.find({ user: null });
+
     const defaultCategories = await CategoryModel.find({ user: null });
+    // console.log(typeof defaultCategories);
+    let copyDefaultCategories = [];
+    for (let i = 0; i < defaultCategories.length; i++) {
+      copyDefaultCategories.push(
+        await CategoryModel.create({
+          // ...copyDefaultCategories,
+          code: defaultCategories[i].code,
+          description: defaultCategories[i].description,
+          user: createdUser._id,
+        })
+      );
+    }
 
     await UserModel.findOneAndUpdate(
       { _id: createdUser._id },
-      { banks: defaultBanks, categories: defaultCategories },
+      { banks: defaultBanks, categories: copyDefaultCategories },
       { new: true }
     );
 
@@ -75,8 +88,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/profile", isAuth, attachCurrentUser, (req, res) => {
-  return res.status(200).json(req.currentUser);
+router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
+  const loggedInUser = req.currentUser;
+  const user = await UserModel.findById({ _id: loggedInUser._id })
+    .populate("banks")
+    .populate("categories");
+  return res.status(200).json(user);
 });
 
 router.patch("/update-profile", isAuth, attachCurrentUser, async (req, res) => {
