@@ -35,12 +35,10 @@ router.post("/signup", async (req, res) => {
     const defaultBanks = await BankModel.find({ user: null });
 
     const defaultCategories = await CategoryModel.find({ user: null });
-    // console.log(typeof defaultCategories);
     let copyDefaultCategories = [];
     for (let i = 0; i < defaultCategories.length; i++) {
       copyDefaultCategories.push(
         await CategoryModel.create({
-          // ...copyDefaultCategories,
           code: defaultCategories[i].code,
           description: defaultCategories[i].description,
           user: createdUser._id,
@@ -68,7 +66,7 @@ router.post("/login", async (req, res) => {
     const user = await UserModel.findOne({ email: email });
     //ADD userisActive === True (If isActive = FALSE mudar para TRUE)
     if (!user) {
-      return res.status(400).json({ msg: "Wrong password or email." });
+      return res.status(400).json({ msg: "Primeira msg" });
     }
 
     if (await bcrypt.compare(password, user.passwordHash)) {
