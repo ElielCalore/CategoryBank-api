@@ -49,7 +49,7 @@ router.get("/:bankId", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const bank = await BankModel.findOne({ _id: bankId });
 
-    if (String(loggedInUser._id) !== String(bank.user)) {
+    if (String(loggedInUser._id) !== String(bank.user) && bank.user) {
       return res
         .status(401)
         .json({ message: "You are not authorized to view this CSV template." });
