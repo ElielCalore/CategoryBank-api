@@ -91,9 +91,10 @@ router.post("/login", async (req, res) => {
 router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
 
-  const user = await UserModel.findOne({ _id: loggedInUser._id }).populate(
-    "categories"
-  );
+  const user = await UserModel.findOne({ _id: loggedInUser._id })
+    .populate("categories")
+    .populate("transactions")
+    .populate("banks");
   return res.status(200).json(user);
 });
 
