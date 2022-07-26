@@ -10,7 +10,7 @@ const userSchema = new Schema({
     //match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   },
   passwordHash: { type: String, required: true },
-  transactions: [{ type: Types.ObjectId, ref: "Transaction" }],
+  transactions: [{ type: Types.ObjectId, ref: "Transactions" }],
   categories: [{ type: Types.ObjectId, ref: "Category" }],
   banks: [{ type: Types.ObjectId, ref: "Bank" }],
 });
