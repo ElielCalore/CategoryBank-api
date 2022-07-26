@@ -9,6 +9,8 @@ const TransactionModel = require("../models/Transaction.model");
 
 router.post("/new-transaction", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
+  const categoryId = req.body.category;
+
   try {
     const newTransaction = await TransactionModel.create({
       ...req.body,
@@ -19,6 +21,13 @@ router.post("/new-transaction", isAuth, attachCurrentUser, async (req, res) => {
       { $push: { transactions: newTransaction._id } },
       { new: true }
     );
+    if (categoryId) {
+      await CategoryModel.findOneAndUpdate(
+        { _id: categoryId },
+        { $push: { transactions: newTransaction._id } },
+        { new: true }
+      );
+    }
     return res.status(201).json(newTransaction);
   } catch (error) {
     console.error(error);
