@@ -46,6 +46,8 @@ router.post("/signup", async (req, res) => {
       );
     }
 
+    console.log(defaultBanks);
+    console.log(defaultCategories);
     await UserModel.findOneAndUpdate(
       { _id: createdUser._id },
       { banks: defaultBanks, categories: copyDefaultCategories },
@@ -88,9 +90,10 @@ router.post("/login", async (req, res) => {
 
 router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
   const loggedInUser = req.currentUser;
-  const user = await UserModel.findById({ _id: loggedInUser._id })
-    .populate("banks")
-    .populate("categories");
+
+  const user = await UserModel.findOne({ _id: loggedInUser._id }).populate(
+    "categories"
+  );
   return res.status(200).json(user);
 });
 
