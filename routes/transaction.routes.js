@@ -119,7 +119,7 @@ router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
   const { categoryId, transactionId } = body;
   const loggedInUser = req.currentUser;
 
-  console.log(transactionId);
+  console.log(req.body);
 
   try {
     const transaction = await TransactionModel.findOne({
@@ -135,7 +135,7 @@ router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
     //Editando transação
     const editedTransaction = await TransactionModel.findOneAndUpdate(
       { _id: transactionId },
-      { category: categoryId },
+      { ...body },
       { new: true }
     );
 
@@ -160,10 +160,11 @@ router.patch("/categorize", isAuth, attachCurrentUser, async (req, res) => {
   }
 });
 
-router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
+router.delete("/delete/:transactionId", isAuth, attachCurrentUser, async (req, res) => {
   const body = req.body;
-  const { transactionId } = body;
+  const { transactionId } = req.params;
   const loggedInUser = req.currentUser;
+  console.log(transactionId)
 
   try {
     const transaction = await TransactionModel.findOne({ _id: transactionId });
